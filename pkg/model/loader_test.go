@@ -68,6 +68,18 @@ var _ = Describe("ModelLoader", func() {
 			Expect(files).To(ContainElement("test.model"))
 			Expect(files).ToNot(ContainElement("README.md"))
 		})
+
+		It("should filter out GGUF files from the model list", func() {
+			os.Create(filepath.Join(modelPath, "test.model"))
+			os.Create(filepath.Join(modelPath, "model.gguf"))
+			os.Create(filepath.Join(modelPath, "llama-7b.gguf"))
+
+			files, err := modelLoader.ListFilesInModelPath()
+			Expect(err).To(BeNil())
+			Expect(files).To(ContainElement("test.model"))
+			Expect(files).ToNot(ContainElement("model.gguf"))
+			Expect(files).ToNot(ContainElement("llama-7b.gguf"))
+		})
 	})
 
 	Context("LoadModel", func() {
